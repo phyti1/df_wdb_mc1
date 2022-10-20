@@ -1,7 +1,7 @@
 USE cds;
 
 CREATE TABLE TMDB_movie_infos (
-	movie_id INT PRIMARY KEY,
+	movie_id INT PRIMARY KEY AUTO_INCREMENT,
 	title VARCHAR(100),
 	description TEXT,
 	vote_average FLOAT,
@@ -10,15 +10,15 @@ CREATE TABLE TMDB_movie_infos (
 );
 
 CREATE TABLE user (
-	user_id VARCHAR(50) PRIMARY KEY,
+	user_id INT PRIMARY KEY AUTO_INCREMENT,
 	name VARCHAR(50)
 );
 
 CREATE TABLE user_rating (
 	rating_id INT PRIMARY KEY AUTO_INCREMENT,
-	user_id VARCHAR(50),
-	rating float,
+	user_id INT,
     movie_id INT,
+	rating float,
 	FOREIGN KEY (movie_id) REFERENCES TMDB_movie_infos(movie_id),
 	FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
