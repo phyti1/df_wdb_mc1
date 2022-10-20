@@ -16,7 +16,7 @@ def get_user():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT user_id, name, password FROM user")
+        cursor.execute("SELECT user_id, name FROM user")
         users = cursor.fetchall()
         respone = jsonify(users)
         respone.status_code = 200
@@ -24,22 +24,75 @@ def get_user():
     except Exception as e:
         raise e
     finally:
-        cursor.close() 
-        conn.close() 
+        cursor.close()
+        conn.close()
+
+# get a specific a user
+@app.route('/user/<string:user_id>', methods=['GET'])
+def get_specific_user(user_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT user_id, name FROM user WHERE user_id = %s", (user_id))
+        user = cursor.fetchone()
+        respone = jsonify(user)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+# get ratings of a specific user
+@app.route('/user/<string:user_id>/ratings', methods=['GET'])
+def get_ratings_from_user(user_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT rating_id, movie_id, rating FROM rating WHERE user_id = %s", (user_id))
+        ratings = cursor.fetchall()
+        respone = jsonify(ratings)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+# get all movies which a specific user rated
+@app.route('/user/<string:user_id>/ratings/movies', methods=['GET'])
+def get_ratings_from_user(user_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT movie_id, title, description, vote_average, vote_count, year FROM movies WHERE movie_id IN (SELECT movie_id FROM rating WHERE user_id = %s)", (user_id))
+        ratings = cursor.fetchall()
+        respone = jsonify(ratings)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 # create a new user
 @app.route('/user', methods=['POST'])
 def create_user():
-    try:        
+    try:
         _json = request.json
         _name = _json['name']
-        _password = _json['password']
         user_id = str(uuid.uuid4())
-        if _name and _password and request.method == 'POST':
+        if _name:
             conn = mysql.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)		
-            sqlQuery = "INSERT INTO user(name, password, user_id) VALUES(%s, %s, %s)"
-            bindData = (_name, _password, user_id)            
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            sqlQuery = "INSERT INTO user(name) VALUES(%s)"
+            bindData = (_name)
             cursor.execute(sqlQuery, bindData)
             conn.commit()
             response = jsonify(user_id)
@@ -50,7 +103,7 @@ def create_user():
     except Exception as e:
         raise e
     finally:
-        cursor.close() 
+        cursor.close()
         conn.close()
 
 # update a user
@@ -59,12 +112,11 @@ def update_user(user_id):
     try:
         _json = request.json
         _name = _json['name']
-        _password = _json['password']
-        if _name and _password and user_id and request.method == 'PUT':
+        if _name:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "UPDATE user SET name=%s, password =%s WHERE user_id=%s"
-            bindData = (_name, _password, user_id)
+            sqlQuery = "UPDATE user SET name = %s WHERE user_id = %s"
+            bindData = (_name, user_id)
             cursor.execute(sqlQuery, bindData)
             user = cursor.fetchall()
             conn.commit()
@@ -76,27 +128,26 @@ def update_user(user_id):
     except Exception as e:
         raise e
     finally:
-        cursor.close() 
+        cursor.close()
         conn.close()
 
 # delete a user
 @app.route('/user/<string:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-	try:
-		conn = mysql.connect()
-		cursor = conn.cursor()
-		cursor.execute("DELETE FROM user WHERE user_id =%s", (user_id))
-		conn.commit()
-		respone = jsonify('User deleted successfully!')
-		respone.status_code = 200
-		return respone
-	except Exception as e:
-		raise e
-	finally:
-		cursor.close() 
-		conn.close()
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM user WHERE user_id =%s", (user_id))
+        conn.commit()
+        respone = jsonify('User deleted successfully!')
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
-       
 @app.errorhandler(404)
 def showMessage(error=None):
     message = {
@@ -106,6 +157,7 @@ def showMessage(error=None):
     respone = jsonify(message)
     respone.status_code = 404
     return respone
-        
+
+
 if __name__ == "__main__":
     app.run()
