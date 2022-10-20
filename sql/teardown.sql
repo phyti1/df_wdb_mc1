@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS user_rating;
+DROP TABLE IF EXISTS TMDB_movie_infos;
+DROP TABLE IF EXISTS user;
