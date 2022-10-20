@@ -3,20 +3,23 @@ from app import app
 import connector
 from flask import jsonify
 from flask import flash, request
-import uuid
-from sqlalchemy import create_engine
-from flask_sqlalchemy import SQLAlchemy
+from flaskext.mysql import MySQL
 
 
 mysql = None
 
-def init_flask(conn_str):
+def init_flask(host, port, user, password, db):
     global mysql
-    db = SQLAlchemy()
-    app.config['SQLALCHEMY_DATABASE_URI'] = conn_str
-    mysql = create_engine(conn_str).connect()
+
+    mysql = MySQL()
+    app.config['MYSQL_DATABASE_HOST'] = host
+    app.config['MYSQL_DATABASE_PORT'] = port
+    app.config['MYSQL_DATABASE_USER'] = user
+    app.config['MYSQL_DATABASE_PASSWORD'] = password
+    app.config['MYSQL_DATABASE_DB'] = db
+    mysql.init_app(app)
     
-    db.init_app(app)
+    return mysql
 
 
 
@@ -30,7 +33,7 @@ def init_flask(conn_str):
 def get_users():
     try:
         conn = mysql.connect()
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor = conn.cursor()
         cursor.execute("SELECT user_id, name FROM user")
         users = cursor.fetchall()
         cursor.close() 
@@ -40,9 +43,6 @@ def get_users():
         return respone
     except Exception as e:
         raise e
-    finally:
-        cursor.close()
-        conn.close()
 
 # get a specific user
 @app.route('/user/<string:user_id>', methods=['GET'])
@@ -82,7 +82,7 @@ def get_ratings_from_user(user_id):
 
 # get all movies which a specific user rated
 @app.route('/user/<string:user_id>/ratings/movies', methods=['GET'])
-def get_ratings_from_user(user_id):
+def get_movies_from_user(user_id):
     try:
         conn = mysql.connect()
         cursor = conn.cursor()
@@ -308,6 +308,6 @@ def showMessage(error=None):
 
 
 if __name__ == "__main__":
-    host, user, password = connector.get_credentials()
-    init_flask(f"mysql+pymysql://{user}:{password}@{host}/wdb?charset=utf8mb4")
+    host, port, user, password, db = connector.get_credentials()
+    init_flask(host, port, user, password, db)
     app.run()

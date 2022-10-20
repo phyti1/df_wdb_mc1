@@ -1,9 +1,9 @@
 
+from sqlite3 import Cursor
 import unittest
 import flask_unittest
 import main
 import testing.mysqld
-from sqlalchemy import create_engine
 
 # prevent generating brand new db every time.  Speeds up tests.
 MYSQLD_FACTORY = testing.mysqld.MysqldFactory(cache_initialized_db=True, port=7531)
@@ -13,16 +13,24 @@ class MainTests(flask_unittest.ClientTestCase):
     app = main.app
 
     def execute_file(self, filename):
+        conn = self.db_conn.connect()
+        cursor = conn.cursor()
+        
         with open(filename, 'r') as f:
             for statement in f.read().split(';'):
                 if len(statement.strip()) > 0:
-                    self.db_conn.execute(statement + ';')
+                    cursor.execute(statement + ';')
+        
+        cursor.close()
+        conn.close()
 
     @classmethod
     def setUpClass(cls):
+        # initialize mock database
         cls.mysql = MYSQLD_FACTORY()
-        main.init_flask(cls.mysql.url())
-        cls.db_conn = create_engine(cls.mysql.url()).connect()
+        # create connection to mock database
+        cls.db_conn = main.init_flask('127.0.0.1', cls.mysql.my_cnf['port'], cls.mysql.settings['user'], cls.mysql.settings['passwd'], 'test')
+
 
     def setUp(self, flask_app):
         # Perform set up before each test, using client
@@ -37,17 +45,23 @@ class MainTests(flask_unittest.ClientTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.mysql.stop()  # from source code we can see this kills the pid
+        cls.mysql.stop() # from source code we can see this kills the pid
         
 
+############################################################################################################
+############################################# UNIT TESTS ###################################################
+############################################################################################################
+
     def test_404(self, client):
+        # test 404
         rv = client.get('/does_not_exist')
         self.assertEqual(rv.status_code, 404)
 
+
     def test_foo_with_client(self, client):
         rv = client.get('/user')
-        self.assertInResponse(bytes('{"message":"Hello, World!"}', 'utf8'), rv)
-        #self.assertInResponse(rv, 'hello world!')
+        self.assertEqual(rv.status_code, 200)
+        self.assertInResponse(bytes('[]', 'utf8'), rv)
 
 
 if __name__ == '__main__':
