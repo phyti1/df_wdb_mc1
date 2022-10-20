@@ -2,6 +2,7 @@
 import unittest
 import flask_unittest
 import main
+import testing.mysqld
 
 
 class MainTests(flask_unittest.ClientTestCase):
@@ -10,11 +11,7 @@ class MainTests(flask_unittest.ClientTestCase):
 
     def setUp(self, client):
         # Perform set up before each test, using client
-        pass
-
-    def tearDown(self, client):
-        # Perform tear down after each test, using client
-        pass
+        self.mysqld = testing.mysqld.Mysqld(my_cnf={'skip-networking': None})
 
     def test_404(self, client):
         rv = client.get('/does_not_exist')
@@ -24,6 +21,10 @@ class MainTests(flask_unittest.ClientTestCase):
         rv = client.get('/user')
         self.assertInResponse(bytes('{"message":"Hello, World!"}', 'utf8'), rv)
         #self.assertInResponse(rv, 'hello world!')
+
+    def tearDown(self, client):
+        # Perform tear down after each test, using client
+        self.mysqld.stop()
 
 
 if __name__ == '__main__':
