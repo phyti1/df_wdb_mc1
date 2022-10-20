@@ -21,6 +21,7 @@ class MainTests(flask_unittest.ClientTestCase):
     @classmethod
     def setUpClass(cls):
         cls.mysql = MYSQLD_FACTORY()
+        main.init_flask(cls.mysql.url())
         cls.db_conn = create_engine(cls.mysql.url()).connect()
 
     def setUp(self, flask_app):

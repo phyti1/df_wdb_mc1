@@ -1,9 +1,24 @@
 import pymysql
 from app import app
-from connector import mysql
+import connector
 from flask import jsonify
 from flask import flash, request
 import uuid
+from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
+
+
+mysql = None
+
+def init_flask(conn_str):
+    global mysql
+    db = SQLAlchemy()
+    app.config['SQLALCHEMY_DATABASE_URI'] = conn_str
+    mysql = create_engine(conn_str).connect()
+    
+    db.init_app(app)
+
+
 
 
 ############################################################################################################
@@ -16,16 +31,16 @@ def get_user():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT user_id, name, password FROM user")
+        cursor.execute("SELECT user_id, name FROM user")
         users = cursor.fetchall()
+        cursor.close() 
+        conn.close() 
         respone = jsonify(users)
         respone.status_code = 200
         return respone
     except Exception as e:
         raise e
-    finally:
-        cursor.close() 
-        conn.close() 
+
 
 # create a new user
 @app.route('/user', methods=['POST'])
@@ -106,6 +121,9 @@ def showMessage(error=None):
     respone = jsonify(message)
     respone.status_code = 404
     return respone
-        
+
+
 if __name__ == "__main__":
+    host, user, password = connector.get_credentials()
+    init_flask(f"mysql+pymysql://{user}:{password}@{host}/wdb?charset=utf8mb4")
     app.run()
