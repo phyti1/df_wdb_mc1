@@ -49,3 +49,15 @@ Unsere API ist nicht sehr komplex. Da wir unsere Datenbank nur in einer Webappli
 | Learning curve | difficult | moderate |
 | Complexity | Higher | Medium |
 | Use cases | multiple microservices, mobile apps | simple apps, resource driven apps |
+
+
+### Docker run
+
+docker build -t wdb -f ./dockerfile .
+
+docker run -d wdb
+
+docker-compose pull
+
+# Container starten
+docker-compose up -d
