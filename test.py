@@ -1,12 +1,11 @@
-
-from sqlite3 import Cursor
+import os
 import unittest
 import flask_unittest
 import main
 import testing.mysqld
 
 # prevent generating brand new db every time.  Speeds up tests.
-MYSQLD_FACTORY = testing.mysqld.MysqldFactory(cache_initialized_db=True, port=7531)
+MYSQLD_FACTORY = testing.mysqld.MysqldFactory(cache_initialized_db=True, my_cnf={'port': 7531})
 
 class MainTests(flask_unittest.ClientTestCase):
     # Assign the `Flask` app object
@@ -14,14 +13,15 @@ class MainTests(flask_unittest.ClientTestCase):
 
     def execute_file(self, filename):
         conn = self.db_conn.connect()
-        cursor = conn.cursor()
         
         with open(filename, 'r') as f:
             for statement in f.read().split(';'):
                 if len(statement.strip()) > 0:
+                    cursor = conn.cursor()
                     cursor.execute(statement + ';')
+                    cursor.close()
         
-        cursor.close()
+        result = conn.commit()
         conn.close()
 
     @classmethod
@@ -45,7 +45,8 @@ class MainTests(flask_unittest.ClientTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.mysql.stop() # from source code we can see this kills the pid
+        # stops the mysqld instance, kills the pid, drops the tmp directory
+        cls.mysql.stop()
         
 
 ############################################################################################################
@@ -61,7 +62,13 @@ class MainTests(flask_unittest.ClientTestCase):
     def test_foo_with_client(self, client):
         rv = client.get('/user')
         self.assertEqual(rv.status_code, 200)
-        self.assertInResponse(bytes('[]', 'utf8'), rv)
+        response = rv.get_json()
+        self.assertEqual(response, 
+        [
+            [1, 'Hanspeter Peterhans'], 
+            [2, 'Werner Würschtli'], 
+            [3, 'Chantal Schläppi']
+        ])
 
 
 if __name__ == '__main__':
