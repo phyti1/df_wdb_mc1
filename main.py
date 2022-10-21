@@ -21,7 +21,15 @@ def init_flask(host, port, user, password, db):
     
     return mysql
 
-
+@app.errorhandler(404)
+def showMessage(error=None):
+    message = {
+        'status': 404,
+        'message': 'Record not found: ' + request.url,
+    }
+    respone = jsonify(message)
+    respone.status_code = 404
+    return respone
 
 
 ############################################################################################################
@@ -54,42 +62,6 @@ def get_specific_user(user_id):
             "SELECT user_id, name FROM user WHERE user_id = %s", (user_id))
         user = cursor.fetchone()
         respone = jsonify(user)
-        respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
-
-# get ratings of a specific user
-@app.route('/user/<string:user_id>/ratings', methods=['GET'])
-def get_ratings_from_user(user_id):
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT rating_id, movie_id, rating FROM rating WHERE user_id = %s", (user_id))
-        ratings = cursor.fetchall()
-        respone = jsonify(ratings)
-        respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
-
-# get all movies which a specific user rated
-@app.route('/user/<string:user_id>/ratings/movies', methods=['GET'])
-def get_movies_from_user(user_id):
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT movie_id, title, description, vote_average, vote_count, year FROM movies WHERE movie_id IN (SELECT movie_id FROM rating WHERE user_id = %s)", (user_id))
-        ratings = cursor.fetchall()
-        respone = jsonify(ratings)
         respone.status_code = 200
         return respone
     except Exception as e:
@@ -165,6 +137,46 @@ def delete_user(user_id):
         cursor.close()
         conn.close()
 
+
+############################################################################################################
+############################################# RATINGS ######################################################
+############################################################################################################
+
+# get ratings of a specific user
+@app.route('/user/<string:user_id>/ratings', methods=['GET'])
+def get_ratings_from_user(user_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT rating_id, movie_id, rating FROM rating WHERE user_id = %s", (user_id))
+        ratings = cursor.fetchall()
+        respone = jsonify(ratings)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+# get all movies which a specific user rated
+@app.route('/user/<string:user_id>/ratings/movies', methods=['GET'])
+def get_movies_from_user(user_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT movie_id, title, description, vote_average, vote_count, year FROM movies WHERE movie_id IN (SELECT movie_id FROM rating WHERE user_id = %s)", (user_id))
+        ratings = cursor.fetchall()
+        respone = jsonify(ratings)
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
 
 
 ############################################################################################################
@@ -296,15 +308,6 @@ def delete_movie(movie_id):
         cursor.close()
         conn.close()
 
-@app.errorhandler(404)
-def showMessage(error=None):
-    message = {
-        'status': 404,
-        'message': 'Record not found: ' + request.url,
-    }
-    respone = jsonify(message)
-    respone.status_code = 404
-    return respone
 
 
 if __name__ == "__main__":
