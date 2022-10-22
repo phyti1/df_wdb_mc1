@@ -9,60 +9,60 @@ Die Dokumentation findet sich hier: https://docs.docker.com/install/.
 Ist Docker installiert und gestartet, können in einen Commandline Fenster im Projektverzeichnis folgende Befehle ausgeführt werden:
 
 ```
-docker build -t wdb -f ./dockerfile .
+shell> docker build -t wdb -f ./dockerfile .
 
-docker-compose pull
+shell> docker-compose pull
 
-docker-compose up -d
+shell> docker-compose up -d
 ```
 
 #### Webserver
 
 Für das Aufsetzen des Webservers muss eine Datenbank installiert werden.
 Wir verwenden MariaDB Server, welches von hier bezogen werden kann: https://mariadb.org/download/.
-Nach fertiger Installation kann die Datenbank folgendermassen aufgesetz werden:
+Nach abgeschlossener Installation kann die Datenbank folgendermassen aufgesetz werden:
 
 ```
 shell> mysql
 
-MariaDB [(none)]> CREATE USER 'wdb'@'%' IDENTIFIED BY 'some_password';
-MariaDB [(none)]> GRANT ALL PRIVILEGES ON wdb.* TO 'wdb'@'%';
-MariaDB [(none)]> FLUSH PRIVILEGES;
-
 MariaDB [(none)]> CREATE DATABASE wdb;
+MariaDB [(none)]> CREATE USER 'api'@'%' IDENTIFIED BY 'some_password';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON wdb.* TO 'api'@'%';
+MariaDB [(none)]> FLUSH PRIVILEGES;
 MariaDB [(none)]> (CTRL + C)
 
 shell> mysql wdb < ./sql/structure.sql
 
 ```
 
-Als Nächstes müssen die Zugangsdaten für den Webserver angepasst werden.
+Die Datenbank "wdb" ist nun aufgesetzt und kann mit Daten befüllt werden.
+
+Als Nächstes müssen die Zugangsdaten der Datenbank dem Webserver mitgeteilt werden.
 Dazu die Datei 'credentials.json.sample' nach 'credentials.json' kopieren und die Felder "host, port, user, password, db" auf die Zugangsdaten des Datenbankservers anpassen.
 
 Als Nächstes muss in den Docker Container gewechselt werden.
-Im Container muss folgender Befehl ausgeführt werden, um die API zu starten:
+Im Container muss folgender Befehl ausgeführt werden, um die Python Abhängigkeiten zu installieren und die API zu starten:
 
 ```
-cd /home/motoko/work/ && pipenv install && pipenv run python main.py
+shell> cd /home/motoko/work/ && pipenv install && pipenv run python main.py
 ```
 
-Wichtig ist, dass zuerst in das neu erstellte virtuelle Environment gewechselt wird.
+Die API ist nun unter http://localhost:5000 verfügbar.
 
-Die API ist nun unter http://localhost:5000 erreichbar.
 
 #### Test
 
-Um die API zu testen kann im Docker container folgender Befehl ausgeführt werden:
+Um die API zu testen muss im Docker Container folgender Befehl ausgeführt werden:
 
 ```
-cd /home/motoko/work/ && pipenv install && pipenv run python test.py
+shell> cd /home/motoko/work/ && pipenv install && pipenv run python test.py
 ```
 
 Waren alle Tests erfolgreich, wird folgende Meldung ausgegeben:
 
 ```
 ----------------------------------------------------------------------
-Ran (n) tests in 3.127s
+Ran (n) tests in (n)s
 
 OK
 ```
@@ -103,7 +103,14 @@ In der Webapplikation soll auf der Hauptseite eine Liste von allen Filmen angeze
 
 ### Architektur
 
-Um die im Use Case beschriebenen Funktionalitäten zu bedienen, haben wir einen Flask Webserver implementiert. Dieser stellt die Schnittstelle zwischen der Webapplikation und der Datenbank dar. Die Datenbank ist ein Mariadb Server, welchen wir auf einem Ubuntu Server gehostet haben. Die API ist in 3 Teile aufgeteilt:
+Um die im Use Case beschriebenen Funktionalitäten zu bedienen, haben wir einen Flask Webserver implementiert. Dieser stellt die Schnittstelle zwischen der Webapplikation und der Datenbank dar. 
+Die Datenbank ist ein Mariadb Server, welchen wir auf einem Ubuntu Server gehostet haben. 
+
+Für die Tests wird im Docker Container eine "mariadb-server" Instanz mit installiert.
+Diese dient als Mock-Datenbank, welche die gleiche Struktur wie die echte Datenbank hat.
+Sie wird vor jedem Test mit denselben Testdaten von ./sql/setup.sql befüllt.
+
+Die API ist in 3 Teile aufgeteilt:
 
 * User API
 * Rating API
