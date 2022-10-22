@@ -1,4 +1,4 @@
-USE cds;
+USE wdb;
 
 CREATE TABLE TMDB_movie_infos (
 	movie_id INT PRIMARY KEY AUTO_INCREMENT,

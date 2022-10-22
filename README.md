@@ -2,28 +2,48 @@
 
 ### Quickstart
 
-Wir verwenden Docker, um die Umgebung für unsere API bereitzustellen. Voraussetzung dafür ist das Installieren von Docker, welches je nach Betriebssystem unterscheidlich gemacht werden muss.
-Die Dokumentation für das Installieren von Docker findet sich hier: https://docs.docker.com/install/ 
+Wir verwenden Docker, um die Umgebung für unsere API bereitzustellen. 
+Voraussetzung dafür ist das Installieren von Docker, welches je nach Betriebssystem unterscheidlich gemacht werden muss.
+Die Dokumentation findet sich hier: https://docs.docker.com/install/.
 
-Ist Docker installiert, können in einen Commandline Fenster im Projektverzeichnis folgende Befehle ausgeführt werden:
+Ist Docker installiert und gestartet, können in einen Commandline Fenster im Projektverzeichnis folgende Befehle ausgeführt werden:
 
 ```
 docker build -t wdb -f ./dockerfile .
-
-docker run -d wdb
 
 docker-compose pull
 
 docker-compose up -d
 ```
 
-Als nächstes muss in den Docker Container gewechselt werden.
-Im Container müssen folgende Befehler ausgeführt werden, um die API zu starten:
+#### Webserver
+
+Für das Aufsetzen des Webservers muss eine Datenbank installiert werden.
+Wir verwenden MariaDB Server, welches von hier bezogen werden kann: https://mariadb.org/download/.
+Nach fertiger Installation kann die Datenbank folgendermassen aufgesetz werden:
 
 ```
-pipenv install
+shell> mysql
 
-python3 main.py
+MariaDB [(none)]> CREATE USER 'wdb'@'%' IDENTIFIED BY 'some_password';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON wdb.* TO 'wdb'@'%';
+MariaDB [(none)]> FLUSH PRIVILEGES;
+
+MariaDB [(none)]> CREATE DATABASE wdb;
+MariaDB [(none)]> (CTRL + C)
+
+shell> mysql wdb < ./sql/structure.sql
+
+```
+
+Als Nächstes müssen die Zugangsdaten für den Webserver angepasst werden.
+Dazu die Datei 'credentials.json.sample' nach 'credentials.json' kopieren und die Felder "host, port, user, password, db" auf die Zugangsdaten des Datenbankservers anpassen.
+
+Als Nächstes muss in den Docker Container gewechselt werden.
+Im Container muss folgender Befehl ausgeführt werden, um die API zu starten:
+
+```
+cd /home/motoko/work/ && pipenv install && pipenv run python main.py
 ```
 
 Wichtig ist, dass zuerst in das neu erstellte virtuelle Environment gewechselt wird.
@@ -35,7 +55,16 @@ Die API ist nun unter http://localhost:5000 erreichbar.
 Um die API zu testen kann im Docker container folgender Befehl ausgeführt werden:
 
 ```
-python3 test.py
+cd /home/motoko/work/ && pipenv install && pipenv run python test.py
+```
+
+Waren alle Tests erfolgreich, wird folgende Meldung ausgegeben:
+
+```
+----------------------------------------------------------------------
+Ran (n) tests in 3.127s
+
+OK
 ```
 
 

@@ -2,7 +2,6 @@ version: "3"
 
 services:
   web:
-    #image: kennethreitz/pipenv
     build:
       context: .
     tty: true
@@ -10,39 +9,5 @@ services:
       - .:/home/motoko/work
     ports:
       - "5000:5000"
-    # depends_on:
-    #     - database
-    networks:
-      default:
-      # dock_net:
-      #   ipv4_address: 127.0.0.3
-
-
-#   database:
-#     image: mariadb:10.3
-#     restart: 'always'
-#     environment:
-#       MYSQL_USER: user
-#       MYSQL_PASSWORD: user
-#       MYSQL_DATABASE: wdb
-#       MYSQL_ROOT_PASSWORD: maria
-#       HTTP_PROXY: "${HTTP_PROXY}"
-#       HTTPS_PROXY: "${HTTPS_PROXY}"
-#       NO_PROXY: "${NO_PROXY}"
-#     ports:
-#     - "3306:3306"
-#     expose:
-#     - "3306"
-#     networks:
-#       default:
-#       dock_net:
-#         ipv4_address: 127.0.0.4
-
-# networks:
-#   dock_net:
-#     driver: bridge
-#     ipam:
-#       config:
-#       - subnet: "127.0.0.0/8"
-#         gateway: "127.0.0.1"
+ 
 

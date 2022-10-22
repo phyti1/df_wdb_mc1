@@ -17,7 +17,7 @@ RUN useradd --create-home --shell /bin/bash --no-log-init --system -u 999  motok
 	echo "motoko	ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 USER motoko
-WORKDIR /home/motoko
+WORKDIR /home/motoko/work
 
 # set some local environment variables
 ENV LANG en_US.UTF-8
