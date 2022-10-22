@@ -10,9 +10,7 @@ Ist Docker installiert und gestartet, können in einen Commandline Fenster im Pr
 
 ```
 shell> docker build -t wdb -f ./dockerfile .
-
 shell> docker-compose pull
-
 shell> docker-compose up -d
 ```
 
