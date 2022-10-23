@@ -84,7 +84,7 @@ OK
 
 | Method | Route | Description |
 | ---- | ---- | ---- |
-| GET | /movie | Get all movies. Possible params: ?limit_n=<int> only returns top n movies by popularity. ?title=<string> only returns movies with titles containing the given string |
+| GET | /movie | Get all movies. Possible params: ?limit_n=<int> only returns top n movies by vote average. ?title=<string> only returns movies with titles containing the given string |
 | GET | /movie/<movie_id> | Get a specific movie |
 | POST | /movie | Create a movie |
 | DELETE | /movie/<movie_id> | Delete a movie |
