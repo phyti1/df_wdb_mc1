@@ -154,7 +154,59 @@ class MainTests(flask_unittest.ClientTestCase):
         response = rv.get_json()
 
         # Assert
+        self.assertEqual(rv.status_code, 200)    
+        
+        
+    def test_get_ratings_of_user_success(self, client):
+        # Act
+        rv = client.get('/user/1/ratings')
+        response = rv.get_json()
+
+        # Assert
         self.assertEqual(rv.status_code, 200)
+        self.assertEqual(response, 
+            [
+                [1, 93, 1],
+                [1, 67, 4],
+                [1, 81, 3]
+            ]
+        )
+
+    def test_get_ratings_of_user_not_found(self, client):
+        # Act
+        rv = client.get('/user/99/ratings')
+        response = rv.get_json()
+
+        # Assert
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(response, 
+            []
+        )
+
+    def test_get_movies_of_user_success(self, client):
+        # Act
+        rv = client.get('/user/1/movies')
+        response = rv.get_json()
+
+        # Assert
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(response, 
+            [
+                [1, 'The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008],
+                [4, 'The Godfather', 'Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care.', 87, 2184, 1972],
+            [3, 'Pulp Fiction', 'A burger-loving hit man, his philosophical partner, a drug-addled gangsters moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.', 84, 6213, 1994],
+            ])
+
+    def test_get_movies_of_user_not_found(self, client):
+        # Act
+        rv = client.get('/user/99/movies')
+        response = rv.get_json()
+
+        # Assert
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(response, 
+            []
+        )
 
 ############################################################################################################
 ############################################### MOVIES #####################################################
@@ -290,60 +342,6 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
 
-############################################################################################################
-############################################### RATINGS ####################################################
-############################################################################################################^
-
-    def test_get_ratings_of_user_success(self, client):
-        # Act
-        rv = client.get('/user/1/ratings')
-        response = rv.get_json()
-
-        # Assert
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(response, 
-            [
-                [1, 93, 1],
-                [1, 67, 4],
-                [1, 81, 3]
-            ]
-        )
-
-    def test_get_ratings_of_user_not_found(self, client):
-        # Act
-        rv = client.get('/user/99/ratings')
-        response = rv.get_json()
-
-        # Assert
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(response, 
-            []
-        )
-
-    def test_get_movies_of_user_success(self, client):
-        # Act
-        rv = client.get('/user/1/movies')
-        response = rv.get_json()
-
-        # Assert
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(response, 
-            [
-                [1, 'The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008],
-                [4, 'The Godfather', 'Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care.', 87, 2184, 1972],
-            [3, 'Pulp Fiction', 'A burger-loving hit man, his philosophical partner, a drug-addled gangsters moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.', 84, 6213, 1994],
-            ])
-
-    def test_get_movies_of_user_not_found(self, client):
-        # Act
-        rv = client.get('/user/99/movies')
-        response = rv.get_json()
-
-        # Assert
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(response, 
-            []
-        )
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,7 +10,6 @@ Ist Docker installiert und gestartet, können in einen Commandline Fenster im Pr
 
 ```
 shell> docker build -t wdb -f ./dockerfile .
-shell> docker-compose pull
 shell> docker-compose up -d
 ```
 
@@ -18,7 +17,7 @@ shell> docker-compose up -d
 
 Für das Aufsetzen des Webservers muss eine Datenbank installiert werden.
 Wir verwenden MariaDB Server, welches von hier bezogen werden kann: https://mariadb.org/download/.
-Nach abgeschlossener Installation kann die Datenbank folgendermassen aufgesetz werden:
+Nach abgeschlossener Installation kann die Datenbank folgendermassen aufgesetzt werden:
 
 ```
 shell> mysql
@@ -50,7 +49,7 @@ Die API ist nun unter http://localhost:5000 verfügbar.
 
 #### Test
 
-Um die API zu testen muss im Docker Container folgender Befehl ausgeführt werden:
+Um die API zu testen muss man in den Docker Container wechseln und dort in der Shell folgenden Befehl ausführen:
 
 ```
 shell> cd /home/motoko/work/ && pipenv install && pipenv run python test.py
@@ -108,23 +107,18 @@ Für die Tests wird im Docker Container eine "mariadb-server" Instanz mit instal
 Diese dient als Mock-Datenbank, welche die gleiche Struktur wie die echte Datenbank hat.
 Sie wird vor jedem Test mit denselben Testdaten von ./sql/setup.sql befüllt.
 
-Die API ist in 3 Teile aufgeteilt:
+Die API ist in zwei Teile aufgeteilt:
 
 * User API
-* Rating API
 * Movie API
 
 #### User API
 
-Die User API dient zum Verwalten der User. Es können alle User abgefragt werden, ein User mit einer bestimmten ID abgefragt werden, ein User erstellt, gelöscht oder geupdatet werden.
+Die User API dient zum Verwalten der User. Es können alle User abgefragt werden, ein User mit einer bestimmten ID abgefragt werden, ein User erstellt, gelöscht oder geupdatet werden. Es können auch die Ratings oder alle Filme eines Users abgefragt werden, welche er bewertet hat. Da die Webapplikation lediglich Ratings aus der bestehenden Datenbank verwenden soll und keine neuen Ratings dazu kommen, fallen Kreierung, Bearbeitung und Löschung von Ratings weg.
 
 #### Movie API
 
 Die Movie API dient zum Verwalten der Movies. Es können alle Movies abgefragt werden, ein Movie mit einer bestimmten ID abgefragt werden, ein Movie erstellt, gelöscht oder geupdatet werden.
-
-#### Rating API
-
-Die Rating API dient zur Einsicht der Ratings. Es können alle Ratings eines Users abgefragt werden, oder alle Filme eines Users abgefragt werden, welche er bewertet hat. Da die Webapplikation lediglich Ratings aus der bestehenden Datenbank verwenden soll und keine neuen Ratings dazu kommen, fallen Kreierung, Bearbeitung und Löschung von Ratings weg.
 
 ### Datenbank
 
