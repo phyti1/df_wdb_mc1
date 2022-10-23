@@ -88,7 +88,9 @@ def create_user():
             response.status_code = 200
             return response
         else:
-            return showMessage()
+            response = jsonify('Invalid request. Name is required.')
+            response.status_code = 400
+            return response
     except Exception as e:
         raise e
     finally:
@@ -113,7 +115,9 @@ def update_user(user_id):
             respone.status_code = 200
             return respone
         else:
-            return showMessage()
+            response = jsonify('Invalid request. Name is required.')
+            response.status_code = 400
+            return response
     except Exception as e:
         raise e
     finally:
@@ -183,7 +187,7 @@ def get_movies_from_user(user_id):
 ############################################# MOVIE ########################################################
 ############################################################################################################
 
-# get all users matching params
+# get all movies matching params
 @app.route('/movies', methods=['GET'])
 def get_movies():
     try:
@@ -202,6 +206,8 @@ def get_movies():
         if limit:
             sqlQuery += " LIMIT %s"
             bindData.append(limit)
+
+        sqlQuery += " ORDER BY vote_average DESC"
 
         cursor.execute(sqlQuery, bindData)
         movies = cursor.fetchall()
@@ -255,7 +261,9 @@ def create_movie():
             response.status_code = 200
             return response
         else:
-            return showMessage()
+            response = jsonify('Invalid request. Title, description, vote_average, vote_count and year are required.')
+            response.status_code = 400
+            return response
     except Exception as e:
         raise e
     finally:
@@ -284,7 +292,9 @@ def update_movie(movie_id):
             respone.status_code = 200
             return respone
         else:
-            return showMessage()
+            response = jsonify('Invalid request. Title, description, vote_average, vote_count and year are required.')
+            response.status_code = 400
+            return response
     except Exception as e:
         raise e
     finally:
