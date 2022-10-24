@@ -89,6 +89,13 @@ OK
 | DELETE | /movie/<movie_id> | Delete a movie |
 | PUT | /movie/<movie_id> | Update a movie |
 
+### Ratings
+
+| Method | Route | Description |
+| ---- | ---- | ---- |
+| POST | /rating | Create a rating |
+| PUT | /rating/<rating_id> | Update a rating |
+| DELETE | /rating/<rating_id> | Delete a rating |
 
 ## Report
 

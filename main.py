@@ -301,6 +301,79 @@ def delete_movie(movie_id):
         conn.close()
 
 
+############################################################################################################
+############################################# RATING #######################################################
+############################################################################################################
+
+# create a rating
+@app.route('/rating', methods=['POST'])
+def create_user():
+    try:
+        _json = request.json
+        if 'user_id' in _json and 'movie_id' in _json and 'rating' in _json:
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            sqlQuery = "INSERT INTO rating (user_id, movie_id, rating) VALUES(%s)"
+            bindData = (_json['user_id'], _json['movie_id'], _json['rating'])
+            cursor.execute(sqlQuery, bindData)
+            conn.commit()
+            rating_id = cursor.lastrowid
+            response = jsonify(rating_id)
+            response.status_code = 200
+            return response
+        else:
+            response = jsonify('Invalid request. user_id, movie_id and rating are required.')
+            response.status_code = 400
+            return response
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+# update a rating
+@app.route('/rating/<string:rating_id>', methods=['PUT'])
+def update_rating(rating_id):
+    try:
+        _json = request.json
+        if 'user_id' in _json and 'movie_id' in _json and 'rating' in _json:
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            sqlQuery = "UPDATE rating SET user_id = %s, movie_id = %s, rating = %s WHERE rating_id = %s"
+            bindData = (_json['user_id'], _json['movie_id'], _json['rating'], rating_id)
+            cursor.execute(sqlQuery, bindData)
+            user = cursor.fetchall()
+            conn.commit()
+            respone = jsonify(user)
+            respone.status_code = 200
+            return respone
+        else:
+            response = jsonify('Invalid request. user_id, movie_id and rating are required.')
+            response.status_code = 400
+            return response
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
+# delete a rating
+@app.route('/rating/<string:rating_id>', methods=['DELETE'])
+def delete_rating(rating_id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM rating WHERE rating_id = %s", (rating_id))
+        conn.commit()
+        respone = jsonify('Rating deleted successfully!')
+        respone.status_code = 200
+        return respone
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+
 
 if __name__ == "__main__":
     host, port, user, password, db = connector.get_credentials()
