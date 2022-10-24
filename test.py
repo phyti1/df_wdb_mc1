@@ -100,8 +100,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-        
-            []
+            None
         )
 
     def test_create_user_success(self, client):
@@ -112,8 +111,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-        
-            [4]
+            4
         )
 
     def test_create_user_unsuccesful(self, client):
