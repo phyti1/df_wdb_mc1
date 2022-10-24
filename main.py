@@ -75,12 +75,11 @@ def get_specific_user(user_id):
 def create_user():
     try:
         _json = request.json
-        _name = _json['name']
-        if _name:
+        if 'name' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             sqlQuery = "INSERT INTO user (name) VALUES(%s)"
-            bindData = (_name)
+            bindData = (_json['name'])
             cursor.execute(sqlQuery, bindData)
             conn.commit()
             user_id = cursor.lastrowid
@@ -102,12 +101,11 @@ def create_user():
 def update_user(user_id):
     try:
         _json = request.json
-        _name = _json['name']
-        if _name:
+        if 'name' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             sqlQuery = "UPDATE user SET name = %s WHERE user_id = %s"
-            bindData = (_name, user_id)
+            bindData = (_json['name'], user_id)
             cursor.execute(sqlQuery, bindData)
             user = cursor.fetchall()
             conn.commit()
@@ -238,17 +236,11 @@ def get_specific_movie(movie_id):
 def create_movie():
     try:
         _json = request.json
-        _title = _json['title']
-        _description = _json['description']
-        _vote_average = _json['vote_average']
-        _vote_count = _json['vote_count']
-        _year = _json['year']
-
-        if _title and _description and _vote_average and _vote_count and _year:
+        if 'title' in _json and 'description' in _json and 'vote_average' in _json and 'vote_count' in _json and 'year' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             sqlQuery = "INSERT INTO movie (title, description, vote_average, vote_count, year) VALUES(%s)"
-            bindData = (_title, _description, _vote_average, _vote_count, _year)
+            bindData = (_json['title'], _json['description'], _json['vote_average'], _json['vote_count'], _json['year'])
             cursor.execute(sqlQuery, bindData)
             conn.commit()
             movie_id = cursor.lastrowid
@@ -270,16 +262,11 @@ def create_movie():
 def update_movie(movie_id):
     try:
         _json = request.json
-        _title = _json['title']
-        _description = _json['description']
-        _vote_average = _json['vote_average']
-        _vote_count = _json['vote_count']
-        _year = _json['year']
-        if _title and _description and _vote_average and _vote_count and _year:
+        if 'title' in _json and 'description' in _json and 'vote_average' in _json and 'vote_count' in _json and 'year' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             sqlQuery = "UPDATE movie SET title = %s, description = %s, vote_average = %s, vote_count = %s, year = %s WHERE movie_id = %s"
-            bindData = (_title, _description, _vote_average, _vote_count, _year, movie_id)
+            bindData = (_json['title'], _json['description'], _json['vote_average'], _json['vote_count'], _json['year'], movie_id)
             cursor.execute(sqlQuery, bindData)
             user = cursor.fetchall()
             conn.commit()
