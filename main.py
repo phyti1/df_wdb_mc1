@@ -307,7 +307,7 @@ def delete_movie(movie_id):
 
 # create a rating
 @app.route('/rating', methods=['POST'])
-def create_user():
+def create_rating():
     try:
         _json = request.json
         if 'user_id' in _json and 'movie_id' in _json and 'rating' in _json:

@@ -9,7 +9,7 @@ Die Dokumentation findet sich hier: https://docs.docker.com/install/.
 Ist Docker installiert und gestartet, können in einen Commandline Fenster im Projektverzeichnis folgende Befehle ausgeführt werden:
 
 ```
-shell> docker build -t wdb -f ./dockerfile .
+shell> docker build -t wdb_mc1_web -f ./dockerfile .
 shell> docker-compose up -d
 ```
 

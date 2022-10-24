@@ -1,22 +1,23 @@
-FROM python:3.9 as build-base
+FROM ubuntu:20.04
 
 # use bash shell as default
 SHELL ["/bin/bash", "-c"]
 
 # disable questions
 ARG DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # install python, pip and pipenv
 RUN apt-get update && \
-    apt-get install -y sudo curl gcc make git mariadb-server net-tools
+    apt-get install -y curl gcc make git net-tools systemd python3.9 python3-pip
+
+# install mariadb-server
+RUN apt-get install -y mariadb-server
 
 RUN pip install --upgrade pip pipenv
 
-# add the user Motoko, tribute to https://en.wikipedia.org/wiki/Motoko_Kusanagi
-RUN useradd --create-home --shell /bin/bash --no-log-init --system -u 999  motoko && \
-	echo "motoko	ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-USER motoko
+# stay on user root to allow test.py to reinstall the database on every test
+USER root
 WORKDIR /home/motoko/work
 
 # set some local environment variables
