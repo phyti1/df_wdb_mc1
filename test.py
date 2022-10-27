@@ -3,8 +3,10 @@ import unittest
 import flask_unittest
 import main
 import testing.mysqld
+import requests
+import threading
 
-# prevent generating brand new db every time.  Speeds up tests.
+# prevent generating brand new db every time. Speeds up tests.
 MYSQLD_FACTORY = testing.mysqld.MysqldFactory(cache_initialized_db=True, my_cnf={'port': 7531})
 
 class MainTests(flask_unittest.ClientTestCase):
@@ -30,6 +32,12 @@ class MainTests(flask_unittest.ClientTestCase):
         cls.mysql = MYSQLD_FACTORY()
         # create connection to mock database
         cls.db_conn = main.init_flask('127.0.0.1', cls.mysql.my_cnf['port'], cls.mysql.settings['user'], cls.mysql.settings['passwd'], 'test')
+        
+        # setup webserver for integration tests
+        cls.app_thread = threading.Thread(target=lambda: cls.app.run(debug=True, use_reloader=False))
+        # close if parent thread (this) is being closed
+        cls.app_thread.setDaemon(True)
+        cls.app_thread.start()
 
 
     def setUp(self, flask_app):
@@ -48,6 +56,34 @@ class MainTests(flask_unittest.ClientTestCase):
         # stops the mysqld instance, kills the pid, drops the tmp directory
         cls.mysql.stop()
         
+
+############################################################################################################
+########################################## INTEGRATION TESTS ###############################################
+############################################################################################################
+
+    def test_connection(self, client):
+        # Act
+        rv = requests.get("http://localhost:5000/user")
+        response = rv.json()
+
+        # Assert
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(response, 
+        [
+            [1, 'Hanspeter Peterhans'], 
+            [2, 'Werner Würschtli'], 
+            [3, 'Chantal Schläppi']
+        ])
+
+    def test_invlaid_url(self, client):
+        # Act
+        url = "http://localhost:5000/invalid_url"
+        rv = requests.get(url)
+        response = rv.json()['message']
+
+        # Assert
+        self.assert_equal(rv.status_code, 404)
+        self.assert_equal(response, f"Record not found: {url}")
 
 ############################################################################################################
 ############################################# UNIT TESTS ###################################################

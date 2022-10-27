@@ -9,6 +9,7 @@ flask = "*"
 flask-unittest = "*"
 flask-cors = "*"
 flask-mysql = "*"
+requests = "*"
 
 [dev-packages]
 

@@ -20,6 +20,9 @@ RUN pip install --upgrade pip pipenv
 USER root
 WORKDIR /home/motoko/work
 
+COPY ./Pipfile /home/motoko/work/Pipfile
+RUN pipenv install
+
 # set some local environment variables
 ENV LANG en_US.UTF-8
 
