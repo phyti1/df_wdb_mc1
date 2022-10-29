@@ -130,6 +130,7 @@ class MainTests(flask_unittest.ClientTestCase):
         response = rv.get_json()
 
         # Assert
+        print(response)
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
         
@@ -346,7 +347,7 @@ class MainTests(flask_unittest.ClientTestCase):
         response = rv.get_json()
 
         # Assert
-        self.assertEqual(rv.status_code, 404)
+        self.assertEqual(rv.status_code, 400)
         self.assertEqual(response, 'Movie not found.'
         )
 
@@ -369,7 +370,7 @@ class MainTests(flask_unittest.ClientTestCase):
 
         # Assert
         self.assertEqual(rv.status_code, 400)
-        self.assertEqual(response, 'Invalid request. User_id, movie_id and rating are required.'
+        self.assertEqual(response, 'Invalid request. user_id, movie_id and rating are required.'
         )
 
     def test_update_rating_success(self, client):
@@ -391,7 +392,7 @@ class MainTests(flask_unittest.ClientTestCase):
 
         # Assert
         self.assertEqual(rv.status_code, 400)
-        self.assertEqual(response, 'Invalid request. User_id, movie_id and rating are required.'
+        self.assertEqual(response, 'Invalid request. user_id, movie_id and rating are required.'
         )
 
     def test_delete_rating_success(self, client):
@@ -408,7 +409,7 @@ class MainTests(flask_unittest.ClientTestCase):
         response = rv.get_json()
 
         # Assert
-        self.assertEqual(rv.status_code, 404)
+        self.assertEqual(rv.status_code, 400)
         self.assertEqual(response, 'Rating not found.'
         )
 

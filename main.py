@@ -44,13 +44,15 @@ def get_users():
         cursor = conn.cursor()
         cursor.execute("SELECT user_id, name FROM user")
         users = cursor.fetchall()
-        cursor.close() 
-        conn.close() 
         respone = jsonify(users)
         respone.status_code = 200
+        cursor.close() 
+        conn.close() 
         return respone
     except Exception as e:
-        raise e
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # get a specific user
 @app.route('/user/<string:user_id>', methods=['GET'])
@@ -63,12 +65,13 @@ def get_specific_user(user_id):
         user = cursor.fetchone()
         respone = jsonify(user)
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # create a new user
 @app.route('/user', methods=['POST'])
@@ -85,16 +88,17 @@ def create_user():
             user_id = cursor.lastrowid
             response = jsonify(user_id)
             response.status_code = 200
+            cursor.close()
+            conn.close()
             return response
         else:
             response = jsonify('Invalid request. Name is required.')
             response.status_code = 400
             return response
     except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # update a user
 @app.route('/user/<string:user_id>', methods=['PUT'])
@@ -111,16 +115,16 @@ def update_user(user_id):
             conn.commit()
             respone = jsonify(user)
             respone.status_code = 200
-            return respone
+            cursor.close()
+            conn.close()
         else:
             response = jsonify('Invalid request. Name is required.')
             response.status_code = 400
-            return response
+        return response
     except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # delete a user
 @app.route('/user/<string:user_id>', methods=['DELETE'])
@@ -132,12 +136,13 @@ def delete_user(user_id):
         conn.commit()
         respone = jsonify('User deleted successfully!')
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # get ratings of a specific user
 @app.route('/user/<string:user_id>/ratings', methods=['GET'])
@@ -150,12 +155,13 @@ def get_ratings_from_user(user_id):
         ratings = cursor.fetchall()
         respone = jsonify(ratings)
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # get all movies which a specific user rated
 @app.route('/user/<string:user_id>/ratings/movies', methods=['GET'])
@@ -168,12 +174,13 @@ def get_movies_from_user(user_id):
         ratings = cursor.fetchall()
         respone = jsonify(ratings)
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 
 ############################################################################################################
@@ -206,12 +213,13 @@ def get_movies():
         movies = cursor.fetchall()
         respone = jsonify(movies)
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # get a specific movie
 @app.route('/movie/<string:movie_id>', methods=['GET'])
@@ -224,12 +232,13 @@ def get_specific_movie(movie_id):
         movie = cursor.fetchone()
         respone = jsonify(movie)
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # create a new movie
 @app.route('/movie', methods=['POST'])
@@ -246,16 +255,17 @@ def create_movie():
             movie_id = cursor.lastrowid
             response = jsonify(movie_id)
             response.status_code = 200
+            cursor.close()
+            conn.close()
             return response
         else:
             response = jsonify('Invalid request. Title, description, vote_average, vote_count and year are required.')
             response.status_code = 400
             return response
     except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # update a movie
 @app.route('/movie/<string:movie_id>', methods=['PUT'])
@@ -272,16 +282,17 @@ def update_movie(movie_id):
             conn.commit()
             respone = jsonify(user)
             respone.status_code = 200
+            cursor.close()
+            conn.close()
             return respone
         else:
             response = jsonify('Invalid request. Title, description, vote_average, vote_count and year are required.')
             response.status_code = 400
             return response
     except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # delete a movie
 @app.route('/movie/<string:movie_id>', methods=['DELETE'])
@@ -293,12 +304,13 @@ def delete_movie(movie_id):
         conn.commit()
         respone = jsonify('Movie deleted successfully!')
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 
 ############################################################################################################
@@ -320,16 +332,17 @@ def create_rating():
             rating_id = cursor.lastrowid
             response = jsonify(rating_id)
             response.status_code = 200
+            cursor.close()
+            conn.close()
             return response
         else:
             response = jsonify('Invalid request. user_id, movie_id and rating are required.')
             response.status_code = 400
             return response
     except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # update a rating
 @app.route('/rating/<string:rating_id>', methods=['PUT'])
@@ -346,16 +359,17 @@ def update_rating(rating_id):
             conn.commit()
             respone = jsonify(user)
             respone.status_code = 200
+            cursor.close()
+            conn.close()
             return respone
         else:
             response = jsonify('Invalid request. user_id, movie_id and rating are required.')
             response.status_code = 400
             return response
     except Exception as e:
-        raise e
-    finally:
-        cursor.close()
-        conn.close()
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 # delete a rating
 @app.route('/rating/<string:rating_id>', methods=['DELETE'])
@@ -367,12 +381,13 @@ def delete_rating(rating_id):
         conn.commit()
         respone = jsonify('Rating deleted successfully!')
         respone.status_code = 200
-        return respone
-    except Exception as e:
-        raise e
-    finally:
         cursor.close()
         conn.close()
+        return respone
+    except Exception as e:
+        response = jsonify(str(e))
+        response.status_code = 400
+        return response
 
 
 if __name__ == "__main__":
