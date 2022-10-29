@@ -27,9 +27,9 @@ def showMessage(error=None):
         'status': 404,
         'message': 'Record not found: ' + request.url,
     }
-    respone = jsonify(message)
-    respone.status_code = 404
-    return respone
+    response = jsonify(message)
+    response.status_code = 404
+    return response
 
 
 ############################################################################################################
@@ -44,11 +44,11 @@ def get_users():
         cursor = conn.cursor()
         cursor.execute("SELECT user_id, name FROM user")
         users = cursor.fetchall()
-        respone = jsonify(users)
-        respone.status_code = 200
+        response = jsonify(users)
+        response.status_code = 200
         cursor.close() 
         conn.close() 
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -63,11 +63,11 @@ def get_specific_user(user_id):
         cursor.execute(
             "SELECT user_id, name FROM user WHERE user_id = %s", (user_id))
         user = cursor.fetchone()
-        respone = jsonify(user)
-        respone.status_code = 200
+        response = jsonify(user)
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -111,10 +111,9 @@ def update_user(user_id):
             sqlQuery = "UPDATE user SET name = %s WHERE user_id = %s"
             bindData = (_json['name'], user_id)
             cursor.execute(sqlQuery, bindData)
-            user = cursor.fetchall()
             conn.commit()
-            respone = jsonify(user)
-            respone.status_code = 200
+            response = jsonify('User updated successfully.')
+            response.status_code = 200
             cursor.close()
             conn.close()
         else:
@@ -134,11 +133,11 @@ def delete_user(user_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM user WHERE user_id =%s", (user_id))
         conn.commit()
-        respone = jsonify('User deleted successfully!')
-        respone.status_code = 200
+        response = jsonify('User deleted successfully!')
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -151,13 +150,13 @@ def get_ratings_from_user(user_id):
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT rating_id, movie_id, rating FROM rating WHERE user_id = %s", (user_id))
+            "SELECT rating_id, movie_id, rating FROM user_rating WHERE user_id = %s", (user_id))
         ratings = cursor.fetchall()
-        respone = jsonify(ratings)
-        respone.status_code = 200
+        response = jsonify(ratings)
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -170,13 +169,13 @@ def get_movies_from_user(user_id):
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT movie_id, title, description, vote_average, vote_count, year FROM movies WHERE movie_id IN (SELECT movie_id FROM rating WHERE user_id = %s)", (user_id))
+            "SELECT movie_id, title, description, vote_average, vote_count, year FROM TMDB_movie_infos WHERE movie_id IN (SELECT movie_id FROM user_rating WHERE user_id = %s)", (user_id))
         ratings = cursor.fetchall()
-        respone = jsonify(ratings)
-        respone.status_code = 200
+        response = jsonify(ratings)
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -196,7 +195,7 @@ def get_movies():
         limit = args.get('limit')
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        sqlQuery = "SELECT movie_id, title, description, vote_average, vote_count, year FROM movies"
+        sqlQuery = "SELECT movie_id, title, description, vote_average, vote_count, year FROM TMDB_movie_infos"
         bindData = []
 
         if title:
@@ -211,11 +210,11 @@ def get_movies():
 
         cursor.execute(sqlQuery, bindData)
         movies = cursor.fetchall()
-        respone = jsonify(movies)
-        respone.status_code = 200
+        response = jsonify(movies)
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -228,13 +227,13 @@ def get_specific_movie(movie_id):
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT movie_id, title, description, vote_average, vote_count, year FROM user WHERE movie_id = %s", (movie_id))
+            "SELECT movie_id, title, description, vote_average, vote_count, year FROM TMDB_movie_infos WHERE movie_id = %s", (movie_id))
         movie = cursor.fetchone()
-        respone = jsonify(movie)
-        respone.status_code = 200
+        response = jsonify(movie)
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -248,7 +247,7 @@ def create_movie():
         if 'title' in _json and 'description' in _json and 'vote_average' in _json and 'vote_count' in _json and 'year' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "INSERT INTO movie (title, description, vote_average, vote_count, year) VALUES(%s)"
+            sqlQuery = "INSERT INTO TMDB_movie_infos (title, description, vote_average, vote_count, year) VALUES(%s)"
             bindData = (_json['title'], _json['description'], _json['vote_average'], _json['vote_count'], _json['year'])
             cursor.execute(sqlQuery, bindData)
             conn.commit()
@@ -275,16 +274,16 @@ def update_movie(movie_id):
         if 'title' in _json and 'description' in _json and 'vote_average' in _json and 'vote_count' in _json and 'year' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "UPDATE movie SET title = %s, description = %s, vote_average = %s, vote_count = %s, year = %s WHERE movie_id = %s"
+            sqlQuery = "UPDATE TMDB_movie_infos SET title = %s, description = %s, vote_average = %s, vote_count = %s, year = %s WHERE movie_id = %s"
             bindData = (_json['title'], _json['description'], _json['vote_average'], _json['vote_count'], _json['year'], movie_id)
             cursor.execute(sqlQuery, bindData)
             user = cursor.fetchall()
             conn.commit()
-            respone = jsonify(user)
-            respone.status_code = 200
+            response = jsonify('Movie updated successfully.')
+            response.status_code = 200
             cursor.close()
             conn.close()
-            return respone
+            return response
         else:
             response = jsonify('Invalid request. Title, description, vote_average, vote_count and year are required.')
             response.status_code = 400
@@ -300,13 +299,13 @@ def delete_movie(movie_id):
     try:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM movie WHERE movie_id = %s", (movie_id))
+        cursor.execute("DELETE FROM TMDB_movie_infos WHERE movie_id = %s", (movie_id))
         conn.commit()
-        respone = jsonify('Movie deleted successfully!')
-        respone.status_code = 200
+        response = jsonify('Movie deleted successfully!')
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400
@@ -325,7 +324,7 @@ def create_rating():
         if 'user_id' in _json and 'movie_id' in _json and 'rating' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "INSERT INTO rating (user_id, movie_id, rating) VALUES(%s)"
+            sqlQuery = "INSERT INTO user_rating (user_id, movie_id, rating) VALUES(%s)"
             bindData = (_json['user_id'], _json['movie_id'], _json['rating'])
             cursor.execute(sqlQuery, bindData)
             conn.commit()
@@ -352,16 +351,15 @@ def update_rating(rating_id):
         if 'user_id' in _json and 'movie_id' in _json and 'rating' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "UPDATE rating SET user_id = %s, movie_id = %s, rating = %s WHERE rating_id = %s"
+            sqlQuery = "UPDATE user_rating SET user_id = %s, movie_id = %s, rating = %s WHERE rating_id = %s"
             bindData = (_json['user_id'], _json['movie_id'], _json['rating'], rating_id)
             cursor.execute(sqlQuery, bindData)
-            user = cursor.fetchall()
             conn.commit()
-            respone = jsonify(user)
-            respone.status_code = 200
+            response = jsonify('Rating updated successfully.')
+            response.status_code = 200
             cursor.close()
             conn.close()
-            return respone
+            return response
         else:
             response = jsonify('Invalid request. user_id, movie_id and rating are required.')
             response.status_code = 400
@@ -377,13 +375,13 @@ def delete_rating(rating_id):
     try:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM rating WHERE rating_id = %s", (rating_id))
+        cursor.execute("DELETE FROM user_rating WHERE rating_id = %s", (rating_id))
         conn.commit()
-        respone = jsonify('Rating deleted successfully!')
-        respone.status_code = 200
+        response = jsonify('Rating deleted successfully!')
+        response.status_code = 200
         cursor.close()
         conn.close()
-        return respone
+        return response
     except Exception as e:
         response = jsonify(str(e))
         response.status_code = 400

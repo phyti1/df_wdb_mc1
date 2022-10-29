@@ -75,7 +75,7 @@ class MainTests(flask_unittest.ClientTestCase):
             [3, 'Chantal Schläppi']
         ])
 
-    def test_invlaid_url(self, client):
+    def test_invalid_url(self, client):
         # Act
         url = "http://localhost:5000/invalid_url"
         rv = requests.get(url)
@@ -136,7 +136,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-            None
+            []
         )
 
     def test_create_user_success(self, client):
@@ -166,11 +166,10 @@ class MainTests(flask_unittest.ClientTestCase):
         response = rv.get_json()
 
         # Assert
-        print(response)
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
         
-            [1, 'John Doe']
+            'User updated successfully.'
         )
 
     def test_update_user_unsuccesful(self, client):
@@ -356,7 +355,7 @@ class MainTests(flask_unittest.ClientTestCase):
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
         
-            [1, 'Harry Potter', 'Wizards messing around', 85, 120, 2000]
+            'Movie updated successfully.'
         )
 
     def test_update_movie_unsuccesful(self, client):
@@ -418,7 +417,7 @@ class MainTests(flask_unittest.ClientTestCase):
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
         
-            [1, 3, 1, 83]
+            'Rating updated successfully.'
         )
 
     def test_update_rating_unsuccesful(self, client):
