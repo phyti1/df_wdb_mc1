@@ -41,7 +41,7 @@ Als Nächstes muss in den Docker Container gewechselt werden.
 Im Container muss folgender Befehl ausgeführt werden, um die Python Abhängigkeiten zu installieren und die API zu starten:
 
 ```
-shell> cd /home/motoko/work/ && pipenv install && pipenv run python main.py
+shell> pipenv run python main.py
 ```
 
 Die API ist nun unter http://localhost:5000 verfügbar.
@@ -52,7 +52,7 @@ Die API ist nun unter http://localhost:5000 verfügbar.
 Um die API zu testen muss man in den Docker Container wechseln und dort in der Shell folgenden Befehl ausführen:
 
 ```
-shell> cd /home/motoko/work/ && pipenv install && pipenv run python test.py
+shell> pipenv run python test.py
 ```
 
 Waren alle Tests erfolgreich, wird folgende Meldung ausgegeben:
