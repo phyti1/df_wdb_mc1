@@ -10,6 +10,7 @@ flask-unittest = "*"
 flask-cors = "*"
 flask-mysql = "*"
 requests = "*"
+cryptography = "*"
 
 [dev-packages]
 

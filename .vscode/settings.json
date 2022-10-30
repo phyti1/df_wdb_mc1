@@ -7,7 +7,7 @@
     "python.analysis.extraPaths": [
         "",
         "c:\\Users\\Pascal\\.vscode\\extensions\\joedevivo.vscode-circuitpython-0.1.19-win32-x64\\stubs",
-        "c:\\Users\\Pascal\\AppData\\Roaming\\Code\\User\\globalStorage\\joedevivo.vscode-circuitpython\\bundle\\20221020\\adafruit-circuitpython-bundle-py-20221020\\lib"
+        "c:\\Users\\Pascal\\AppData\\Roaming\\Code\\User\\globalStorage\\joedevivo.vscode-circuitpython\\bundle\\20221029\\adafruit-circuitpython-bundle-py-20221029\\lib"
     ],
     "circuitpython.board.version": null
 }

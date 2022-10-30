@@ -1,0 +1,1 @@
+Please use src/test.py for testing, as our tests need to include main.py which cannot be in a parent directory.

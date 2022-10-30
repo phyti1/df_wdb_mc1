@@ -1,6 +1,6 @@
 import pymysql
 from app import app
-import connector
+import connector as connector
 from flask import jsonify
 from flask import flash, request
 from flaskext.mysql import MySQL
