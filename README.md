@@ -99,11 +99,15 @@ OK
 
 ## Report
 
+### Introduction
+
+Filme und Serien schaut man heutzutage vor allem auf Netflix oder Disney+. Beide Plattformen nutzen Recommender Systeme, um den Nutzern passende Filme und Serien zu empfehlen. Einen solchen Recommender und die dazugehörige Webapplikation bauen wir in der Challenge "Tinder for Movies", welche wir dieses Semester besuchen. Um in der Webapplikation auf die relevanten Daten zugreifen zu können, bauen wir eine API, welche die Daten aus der Datenbank abruft und an die Webapplikation weitergibt. Eine API ist eine wichtige und sicherheitskritische Komponente, da sie Zugang zu den erlaubten Operationen im Backend anbietet. Deshalb ist es wichtig, dass die API gut dokumentiert und getestet wird.
+
 ### Use Case und Motivation
 
 Unsere API soll für die Challenge Tinder for Movies gebraucht werden. Sie stellt den Datenverkehr zwischen der geplanten Webapplikation und der Datenbank sicher. 
 
-In der Webapplikation soll auf der Hauptseite eine Liste von allen Filmen angezeigt werden, zu Beginn sortiert nach Popularität. Durch ein Suchfeld können spezifische Filme gefunden werden. Mit einem Klick auf einen Film werden weitere Informationen angezeigt. Weiter soll man sich auf der Web-Applikation auch registrieren können. Mit dem eigenen Account kann man dann Filme bewerten. Die Hauptseite sortiert die Filme dann nicht mehr nur nach Popularität, sondern anhand unseres Recommenders. Ausserdem kann der Benutzer seine eigenen Ratings anschauen und auch wieder bearbeiten bzw. löschen. Sicherheitsrelevante Themen für Login und die Registrierung können dabei aber vernachlässigt werden.
+In der Webapplikation soll auf der Hauptseite eine Liste von allen Filmen angezeigt werden, zu Beginn sortiert nach Popularität. Durch ein Suchfeld können spezifische Filme gefunden werden. Mit einem Klick auf einen Film werden weitere Informationen angezeigt. Weiter soll man sich auf der Webapplikation auch registrieren können. Mit dem eigenen Account kann man dann Filme bewerten. Die Hauptseite sortiert die Filme dann nicht mehr nur nach Popularität, sondern anhand unseres Recommenders. Ausserdem kann der Benutzer seine eigenen Ratings anschauen und auch wieder bearbeiten bzw. löschen. Sicherheitsrelevante Themen für Login und die Registrierung können dabei aber vernachlässigt werden.
 
 ### Architektur
 

@@ -13,6 +13,7 @@ class MainTests(flask_unittest.ClientTestCase):
     # Assign the `Flask` app object
     app = main.app
 
+    # execute multi line sql statement, for test setup and teardown
     def execute_file(self, filename):
         conn = self.db_conn.connect()
         
@@ -35,8 +36,9 @@ class MainTests(flask_unittest.ClientTestCase):
         
         # setup webserver for integration tests
         cls.app_thread = threading.Thread(target=lambda: cls.app.run(debug=True, use_reloader=False))
-        # close if parent thread (this) is being closed
+        # configure to close if parent thread (this) is being closed
         cls.app_thread.setDaemon(True)
+        # start webserver in background
         cls.app_thread.start()
 
 
@@ -48,7 +50,7 @@ class MainTests(flask_unittest.ClientTestCase):
 
     def tearDown(self, flask_app):
         # Perform tear down after each test, using client
-        # drop all tables from mock
+        # drop all tables from mock db in correct order to not violate foreign key constraints
         self.execute_file('./sql/teardown.sql')
 
     @classmethod
@@ -61,7 +63,7 @@ class MainTests(flask_unittest.ClientTestCase):
 ########################################## INTEGRATION TESTS ###############################################
 ############################################################################################################
 
-    def test_connection(self, client):
+    def test_get_all_users_integration(self, client):
         # Act
         rv = requests.get("http://localhost:5000/user")
         response = rv.json()
@@ -74,6 +76,28 @@ class MainTests(flask_unittest.ClientTestCase):
             [2, 'Werner Würschtli'], 
             [3, 'Chantal Schläppi']
         ])
+
+    def test_get_specific_user_not_found_integration(self, client):
+        # Act
+        rv = requests.get("http://localhost:5000/user/99")
+        response = rv.json()
+
+        # Assert
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(response, None)
+
+    def test_404_integration(self, client):
+        # Act
+        rv = requests.get("http://localhost:5000/does_not_exist")
+        response = rv.json()
+
+        # Assert
+        self.assertEqual(rv.status_code, 404)
+        self.assertEqual(response, 
+        {
+            'message': 'Record not found: http://localhost:5000/does_not_exist', 
+            'status': 404
+        })
 
 ############################################################################################################
 ############################################# UNIT TESTS ###################################################
@@ -113,7 +137,6 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-        
             [1, 'Hanspeter Peterhans']
         )
 
