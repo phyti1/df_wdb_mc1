@@ -19,6 +19,6 @@ CREATE TABLE user_rating (
 	user_id INT,
     movie_id INT,
 	rating float,
-	FOREIGN KEY (movie_id) REFERENCES TMDB_movie_infos(movie_id),
-	FOREIGN KEY (user_id) REFERENCES user(user_id)
+	FOREIGN KEY (movie_id) REFERENCES TMDB_movie_infos(movie_id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );

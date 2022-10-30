@@ -19,8 +19,8 @@ CREATE TABLE user_rating (
 	user_id INT,
     movie_id INT,
 	rating float,
-	FOREIGN KEY (movie_id) REFERENCES TMDB_movie_infos(movie_id),
-	FOREIGN KEY (user_id) REFERENCES user(user_id)
+	FOREIGN KEY (movie_id) REFERENCES TMDB_movie_infos(movie_id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
 INSERT INTO TMDB_movie_infos (title, description, vote_average, vote_count, year) VALUES ('The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008);
