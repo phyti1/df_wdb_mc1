@@ -131,7 +131,7 @@ def delete_user(user_id):
     try:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM user WHERE user_id =%s", (user_id))
+        cursor.execute("DELETE FROM user WHERE user_id = %s", (user_id))
         conn.commit()
         response = jsonify('User deleted successfully!')
         response.status_code = 200
@@ -150,7 +150,7 @@ def get_ratings_from_user(user_id):
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT rating_id, movie_id, rating FROM user_rating WHERE user_id = %s", (user_id))
+            "SELECT user_id, movie_id, rating FROM user_rating WHERE user_id = %s", (user_id))
         ratings = cursor.fetchall()
         response = jsonify(ratings)
         response.status_code = 200
@@ -187,7 +187,7 @@ def get_movies_from_user(user_id):
 ############################################################################################################
 
 # get all movies matching params
-@app.route('/movies', methods=['GET'])
+@app.route('/movie', methods=['GET'])
 def get_movies():
     try:
         args = request.args
@@ -196,19 +196,16 @@ def get_movies():
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         sqlQuery = "SELECT movie_id, title, description, vote_average, vote_count, year FROM TMDB_movie_infos"
-        bindData = []
 
         if title:
-            sqlQuery += " WHERE title LIKE %s"
-            bindData.append(title)
-
-        if limit:
-            sqlQuery += " LIMIT %s"
-            bindData.append(limit)
+            sqlQuery += " WHERE title LIKE '%" + title + "%'"
 
         sqlQuery += " ORDER BY vote_average DESC"
 
-        cursor.execute(sqlQuery, bindData)
+        if limit:
+            sqlQuery += " LIMIT " + limit
+        
+        cursor.execute(sqlQuery)
         movies = cursor.fetchall()
         response = jsonify(movies)
         response.status_code = 200
@@ -247,7 +244,7 @@ def create_movie():
         if 'title' in _json and 'description' in _json and 'vote_average' in _json and 'vote_count' in _json and 'year' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "INSERT INTO TMDB_movie_infos (title, description, vote_average, vote_count, year) VALUES(%s)"
+            sqlQuery = "INSERT INTO TMDB_movie_infos (title, description, vote_average, vote_count, year) VALUES(%s, %s, %s, %s, %s)"
             bindData = (_json['title'], _json['description'], _json['vote_average'], _json['vote_count'], _json['year'])
             cursor.execute(sqlQuery, bindData)
             conn.commit()
@@ -324,7 +321,7 @@ def create_rating():
         if 'user_id' in _json and 'movie_id' in _json and 'rating' in _json:
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "INSERT INTO user_rating (user_id, movie_id, rating) VALUES(%s)"
+            sqlQuery = "INSERT INTO user_rating (user_id, movie_id, rating) VALUES(%s, %s, %s)"
             bindData = (_json['user_id'], _json['movie_id'], _json['rating'])
             cursor.execute(sqlQuery, bindData)
             conn.commit()

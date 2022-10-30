@@ -75,16 +75,6 @@ class MainTests(flask_unittest.ClientTestCase):
             [3, 'Chantal Schläppi']
         ])
 
-    def test_invalid_url(self, client):
-        # Act
-        url = "http://localhost:5000/invalid_url"
-        rv = requests.get(url)
-        response = rv.json()['message']
-
-        # Assert
-        self.assert_equal(rv.status_code, 404)
-        self.assert_equal(response, f"Record not found: {url}")
-
 ############################################################################################################
 ############################################# UNIT TESTS ###################################################
 ############################################################################################################
@@ -136,7 +126,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-            []
+            None
         )
 
     def test_create_user_success(self, client):
@@ -200,9 +190,8 @@ class MainTests(flask_unittest.ClientTestCase):
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
             [
-                [1, 93, 1],
-                [1, 67, 4],
-                [1, 81, 3]
+                [1, 1, 93.0], 
+                [1, 4, 67.0]
             ]
         )
 
@@ -219,7 +208,7 @@ class MainTests(flask_unittest.ClientTestCase):
 
     def test_get_movies_of_user_success(self, client):
         # Act
-        rv = client.get('/user/1/movies')
+        rv = client.get('/user/1/ratings/movies')
         response = rv.get_json()
 
         # Assert
@@ -228,12 +217,11 @@ class MainTests(flask_unittest.ClientTestCase):
             [
                 [1, 'The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008],
                 [4, 'The Godfather', 'Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care.', 87, 2184, 1972],
-            [3, 'Pulp Fiction', 'A burger-loving hit man, his philosophical partner, a drug-addled gangsters moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.', 84, 6213, 1994],
             ])
 
     def test_get_movies_of_user_not_found(self, client):
         # Act
-        rv = client.get('/user/99/movies')
+        rv = client.get('/user/99/ratings/movies')
         response = rv.get_json()
 
         # Assert
@@ -253,14 +241,7 @@ class MainTests(flask_unittest.ClientTestCase):
 
         # Assert
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(response, 
-        [
-            [1, 'The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008],
-            [2, 'The Matrix', 'Set in the 22nd century, The Matrix tells the story of a computer hacker who joins a group of underground insurgents fighting the vast and powerful computers who now rule the earth.', 82, 2179, 1999],
-            [3, 'Pulp Fiction', 'A burger-loving hit man, his philosophical partner, a drug-addled gangsters moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.', 84, 6213, 1994],
-            [4, 'The Godfather', 'Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care.', 87, 2184, 1972],
-            [5, 'Scarface', 'After getting a green card in exchange for assassinating a Cuban government official, Tony Montana stakes a claim on the drug trade in Miami. Viciously murdering anyone who stands in his way, Tony eventually becomes the biggest drug lord in the state.', 81, 987, 1983] 
-        ])
+        self.assertEqual(len(response), 5)
     
     def test_get_specific_movie_success(self, client):
         # Act
@@ -281,7 +262,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-            []
+            None
         )
 
     def test_get_movies_with_title(self, client):
@@ -291,13 +272,12 @@ class MainTests(flask_unittest.ClientTestCase):
 
         # Assert
         self.assertEqual(rv.status_code, 200)
+
         self.assertEqual(response, 
             [
-                [1, 'The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008]
-                
+                {'description': 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 'movie_id': 1, 'title': 'The Dark Knight', 'vote_average': 85.0, 'vote_count': 3716, 'year': 2008}                
             ]
         )
-
 
     def test_get_movies_with_title_not_found(self, client):
         # Act
@@ -318,10 +298,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-            [
-            [4, 'The Godfather', 'Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care.', 87, 2184, 1972],
-                [1, 'The Dark Knight', 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 85, 3716, 2008]
-            ]
+            [{'description': 'Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care.', 'movie_id': 4, 'title': 'The Godfather', 'vote_average': 87.0, 'vote_count': 2184, 'year': 1972}, {'description': 'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.', 'movie_id': 1, 'title': 'The Dark Knight', 'vote_average': 85.0, 'vote_count': 3716, 'year': 2008}]  
         )
 
     def test_create_movie_success(self, client):
@@ -332,8 +309,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-        
-            [6]
+            6
         )
 
     def test_create_movie_unsuccesful(self, client):
@@ -354,7 +330,6 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-        
             'Movie updated successfully.'
         )
 
@@ -376,15 +351,10 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
 
-    def test_delete_movie_unsuccesful(self, client):
-        # Act
-        rv = client.delete('/movie/99')
-        response = rv.get_json()
 
-        # Assert
-        self.assertEqual(rv.status_code, 400)
-        self.assertEqual(response, 'Movie not found.'
-        )
+############################################################################################################
+############################################### RATINGS ####################################################
+############################################################################################################
 
     def test_create_rating_success(self, client):
         # Act
@@ -394,8 +364,7 @@ class MainTests(flask_unittest.ClientTestCase):
         # Assert
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(response, 
-        
-            [1]
+            7
         )
 
     def test_create_rating_unsuccesful(self, client):
@@ -437,16 +406,6 @@ class MainTests(flask_unittest.ClientTestCase):
 
         # Assert
         self.assertEqual(rv.status_code, 200)
-
-    def test_delete_rating_unsuccesful(self, client):
-        # Act
-        rv = client.delete('/rating/99')
-        response = rv.get_json()
-
-        # Assert
-        self.assertEqual(rv.status_code, 400)
-        self.assertEqual(response, 'Rating not found.'
-        )
 
 
 if __name__ == '__main__':
